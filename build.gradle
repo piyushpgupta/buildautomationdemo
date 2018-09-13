@@ -1,0 +1,63 @@
+buildscript {
+    repositories {
+        jcenter()   
+    }
+  
+}
+
+plugins {
+    id "org.sonarqube" version "1.1"
+}
+
+apply plugin: 'java'
+apply plugin: 'jacoco'
+apply plugin: 'org.sonarqube'
+
+
+
+
+sourceCompatibility = 1.8 // java 8
+targetCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile 'com.google.guava:guava:18.0'
+    testCompile 'junit:junit:4.4'
+}
+
+task sourcesJar(type: Jar, dependsOn: classes) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from javadoc.destinationDir
+}
+
+artifacts {
+    archives sourcesJar
+    archives javadocJar
+}
+
+
+jacocoTestReport {
+    reports {
+        xml.enabled true
+        xml.destination "${buildDir}/reports/jacoco.xml"
+        csv.enabled false
+        html.destination "${buildDir}/reports/jacoco-html"
+    }
+}
+
+sonarqube {
+    properties {
+        property "sonar.projectName", "gradle-jacoco-report-coverage-example"
+        property "sonar.projectKey", "gradle-jacoco-report-coverage-example"
+        property "sonar.java.source", "1.8"
+        property "sonar.java.target", "1.8"
+    }
+}
